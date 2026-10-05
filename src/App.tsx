@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
 ]
 
 export default function App() {
-  const { latas, loading, error, addLata, updateLata, deleteLata } = useLatas()
+  const { latas, loading, error, addLata, addLatas, updateLata, deleteLata } = useLatas()
 
   const [activeTab, setActiveTab] = useState<Tab>('search')
 
@@ -86,6 +86,15 @@ export default function App() {
     }
   }
 
+  async function handleImportMissing(toAdd: LataInput[]) {
+    if (toAdd.length === 0) return
+    await addLatas(toAdd)
+    setToast({
+      message: `Se ${toAdd.length === 1 ? 'ha' : 'han'} añadido ${toAdd.length} ${toAdd.length === 1 ? 'lata nueva' : 'latas nuevas'} desde el Excel.`,
+      type: 'success',
+    })
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 border-b border-periwinkle-200 bg-periwinkle-300/95 backdrop-blur">
@@ -96,7 +105,7 @@ export default function App() {
               Lara · Comparador de latas para gatos
             </h1>
             <p className="text-xs text-periwinkle-800/80 sm:text-sm">
-              
+              Consulta, filtra, ordena y gestiona la comparativa de comida húmeda para Luna y Artemis.
             </p>
           </div>
 
@@ -147,6 +156,7 @@ export default function App() {
             distinctValues={distinctValues}
             onEdit={openEditForm}
             onDeleteRequest={setPendingDelete}
+            onImportMissing={handleImportMissing}
           />
         ) : (
           <SearchTab

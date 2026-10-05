@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { COLUMNS } from '../types'
-import type { ColumnKey, Lata, SortState } from '../types'
+import type { ColumnKey, Lata, LataInput, SortState } from '../types'
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
 import { Pagination } from './Pagination'
+import { ExcelImportButton } from './ExcelImportButton'
 
 const FACET_COLUMNS = COLUMNS.filter((c) => c.facetFilter).map((c) => c.key)
 const DEFAULT_PAGE_SIZE = 5
@@ -13,9 +14,10 @@ interface DatabaseTabProps {
   distinctValues: Record<string, string[]>
   onEdit: (lata: Lata) => void
   onDeleteRequest: (lata: Lata) => void
+  onImportMissing: (toAdd: LataInput[]) => Promise<void>
 }
 
-export function DatabaseTab({ latas, distinctValues, onEdit, onDeleteRequest }: DatabaseTabProps) {
+export function DatabaseTab({ latas, distinctValues, onEdit, onDeleteRequest, onImportMissing }: DatabaseTabProps) {
   const [columnFilters, setColumnFilters] = useState<Record<string, Set<string>>>({})
   const [sort, setSort] = useState<SortState>({ column: null, direction: null })
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
@@ -88,12 +90,15 @@ export function DatabaseTab({ latas, distinctValues, onEdit, onDeleteRequest }: 
 
   return (
     <>
-      <Toolbar
-        resultCount={filteredAndSortedRows.length}
-        totalCount={latas.length}
-        activeFilterCount={activeFilterCount}
-        onResetFilters={resetFilters}
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Toolbar
+          resultCount={filteredAndSortedRows.length}
+          totalCount={latas.length}
+          activeFilterCount={activeFilterCount}
+          onResetFilters={resetFilters}
+        />
+        <ExcelImportButton latas={latas} onImportMissing={onImportMissing} />
+      </div>
 
       <DataTable
         rows={pagedRows}

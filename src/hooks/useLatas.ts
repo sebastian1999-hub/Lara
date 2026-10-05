@@ -8,6 +8,7 @@ interface UseLatasResult {
   error: string | null
   reload: () => Promise<void>
   addLata: (input: LataInput) => Promise<void>
+  addLatas: (inputs: LataInput[]) => Promise<void>
   updateLata: (id: number, input: LataInput) => Promise<void>
   deleteLata: (id: number) => Promise<void>
 }
@@ -45,6 +46,13 @@ export function useLatas(): UseLatasResult {
     await reload()
   }, [reload])
 
+  const addLatas = useCallback(async (inputs: LataInput[]) => {
+    if (inputs.length === 0) return
+    const { error: insertError } = await supabase.from('latas').insert(inputs)
+    if (insertError) throw new Error(insertError.message)
+    await reload()
+  }, [reload])
+
   const updateLata = useCallback(async (id: number, input: LataInput) => {
     const { error: updateError } = await supabase.from('latas').update(input).eq('id', id)
     if (updateError) throw new Error(updateError.message)
@@ -57,5 +65,5 @@ export function useLatas(): UseLatasResult {
     await reload()
   }, [reload])
 
-  return { latas, loading, error, reload, addLata, updateLata, deleteLata }
+  return { latas, loading, error, reload, addLata, addLatas, updateLata, deleteLata }
 }

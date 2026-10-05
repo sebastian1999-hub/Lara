@@ -71,6 +71,10 @@ La tabla `latas` tiene estas columnas:
 - **Búsqueda global** por marca, producto, composición o enlace.
 - **Alta / edición / baja** de filas mediante un formulario modal, con confirmación antes de
   eliminar y avisos (toast) de éxito/error.
+- **Importar desde Excel**: en la pestaña "Base de datos", el botón "Cargar Excel" permite subir
+  un `.xlsx`/`.xls`, compara sus filas (por marca + producto, normalizado a minúsculas) con las
+  ya guardadas y añade solo las que faltan, mostrando antes un resumen de cuántas se omiten y
+  cuántas son nuevas.
 - **Columna de precio** ya preparada en base de datos y en el formulario para cuando quieras
   rellenarla.
 
