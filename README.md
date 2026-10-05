@@ -80,3 +80,18 @@ La tabla `latas` tiene estas columnas:
 - `npm run build` – build de producción (`dist/`)
 - `npm run preview` – sirve el build de producción localmente
 - `npm run lint` – linting con ESLint
+
+## Despliegue en GitHub Pages
+
+El repositorio incluye un workflow ([`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml))
+que compila y publica automáticamente la web en GitHub Pages cada vez que se hace push a `main`.
+
+Para activarlo (solo la primera vez):
+
+1. Entra en el repositorio de GitHub → **Settings → Pages**.
+2. En **Build and deployment → Source**, selecciona **GitHub Actions**.
+3. Haz push a `main` (o relanza el workflow desde la pestaña **Actions**).
+
+La web quedará publicada en `https://<usuario>.github.io/<repositorio>/`. El `base` de Vite y
+las rutas de los assets (favicon, icono del gato) se calculan automáticamente a partir del
+nombre del repositorio, así que no hace falta tocar nada más.
