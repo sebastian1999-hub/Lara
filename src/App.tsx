@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
 ]
 
 export default function App() {
-  const { latas, loading, error, addLata, addLatas, updateLata, deleteLata } = useLatas()
+  const { latas, loading, error, reload, addLata, addLatas, updateLata, updatePrecio, deleteLata } = useLatas()
 
   const [activeTab, setActiveTab] = useState<Tab>('search')
 
@@ -157,6 +157,8 @@ export default function App() {
             onEdit={openEditForm}
             onDeleteRequest={setPendingDelete}
             onImportMissing={handleImportMissing}
+            onUpdatePrecio={updatePrecio}
+            onReload={reload}
           />
         ) : (
           <SearchTab

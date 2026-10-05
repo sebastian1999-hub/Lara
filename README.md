@@ -61,6 +61,40 @@ La tabla `latas` tiene estas columnas:
 > URL y la clave `anon` puede leer y escribir. Si en el futuro quieres restringir la edición,
 > edita las políticas RLS en `supabase/schema.sql` (sección 5) para exigir usuarios autenticados.
 
+### Edge Function: actualizar precios por scraping
+
+El botón "Actualizar precios" llama a una Supabase Edge Function (`scrape-price`) que lee el
+HTML de la ficha de cada producto en el servidor (no se puede hacer directamente desde el
+navegador por las restricciones CORS de cada tienda) y extrae el precio buscando, en este orden:
+
+1. Datos estructurados `JSON-LD` (`schema.org/Product`), intentando casar la URL del nodo con la
+   URL exacta de la ficha para acertar la variante correcta (funciona con Zooplus, Tiendanimal,
+   Patitasco y la mayoría de tiendas modernas).
+2. La variable `PriceInclTax` típica de tiendas PrestaShop.
+3. Metaetiquetas `product:price:amount` / `og:price:amount` / `itemprop="price"`.
+4. Un patrón genérico `12,34 €` como último recurso.
+
+El código está en [`supabase/functions/scrape-price/index.ts`](./supabase/functions/scrape-price/index.ts)
+y no tiene dependencias externas (solo usa APIs nativas de Deno/Web), así que se puede desplegar
+pegándolo directamente en el panel de Supabase, sin necesidad de instalar la CLI:
+
+1. Entra en tu proyecto de Supabase → **Edge Functions → Deploy a new function → Via Editor**.
+2. Ponle el nombre `scrape-price`.
+3. Pega el contenido completo de `supabase/functions/scrape-price/index.ts` en el editor.
+4. Pulsa **Deploy**.
+
+Si prefieres la CLI de Supabase (requiere Docker):
+
+```bash
+supabase login
+supabase link --project-ref hzsxlpzsknysjdpodpgg
+supabase functions deploy scrape-price
+```
+
+> Algunas tiendas pueden bloquear peticiones automatizadas o cargar el precio solo con
+> JavaScript del lado del cliente; en esos casos la lata se marcará como "precio no encontrado"
+> en vez de fallar todo el proceso, y puedes añadir el precio manualmente editando la fila.
+
 ## Funcionalidades
 
 - **Listado responsive**: tabla completa en escritorio/tablet y tarjetas apiladas en móvil.
@@ -75,6 +109,11 @@ La tabla `latas` tiene estas columnas:
   un `.xlsx`/`.xls`, compara sus filas (por marca + producto, normalizado a minúsculas) con las
   ya guardadas y añade solo las que faltan, mostrando antes un resumen de cuántas se omiten y
   cuántas son nuevas.
+- **Actualizar precios automáticamente**: el botón "Actualizar precios" recorre todas las latas
+  que tienen un enlace de compra guardado, lee el precio directamente de la ficha del producto
+  (Zooplus, Tiendanimal, Patitasco, etc.) y lo guarda en la columna `precio`, mostrando el
+  progreso y un resumen final (actualizadas / sin precio encontrado / con error). Requiere
+  desplegar la Edge Function `scrape-price` (ver más abajo).
 - **Columna de precio** ya preparada en base de datos y en el formulario para cuando quieras
   rellenarla.
 

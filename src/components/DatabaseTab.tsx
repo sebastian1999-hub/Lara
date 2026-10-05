@@ -5,6 +5,7 @@ import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
 import { Pagination } from './Pagination'
 import { ExcelImportButton } from './ExcelImportButton'
+import { UpdatePricesButton } from './UpdatePricesButton'
 
 const FACET_COLUMNS = COLUMNS.filter((c) => c.facetFilter).map((c) => c.key)
 const DEFAULT_PAGE_SIZE = 5
@@ -15,9 +16,19 @@ interface DatabaseTabProps {
   onEdit: (lata: Lata) => void
   onDeleteRequest: (lata: Lata) => void
   onImportMissing: (toAdd: LataInput[]) => Promise<void>
+  onUpdatePrecio: (id: number, precio: number) => Promise<void>
+  onReload: () => Promise<void>
 }
 
-export function DatabaseTab({ latas, distinctValues, onEdit, onDeleteRequest, onImportMissing }: DatabaseTabProps) {
+export function DatabaseTab({
+  latas,
+  distinctValues,
+  onEdit,
+  onDeleteRequest,
+  onImportMissing,
+  onUpdatePrecio,
+  onReload,
+}: DatabaseTabProps) {
   const [columnFilters, setColumnFilters] = useState<Record<string, Set<string>>>({})
   const [sort, setSort] = useState<SortState>({ column: null, direction: null })
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
@@ -97,7 +108,10 @@ export function DatabaseTab({ latas, distinctValues, onEdit, onDeleteRequest, on
           activeFilterCount={activeFilterCount}
           onResetFilters={resetFilters}
         />
-        <ExcelImportButton latas={latas} onImportMissing={onImportMissing} />
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <ExcelImportButton latas={latas} onImportMissing={onImportMissing} />
+          <UpdatePricesButton latas={latas} onUpdatePrice={onUpdatePrecio} onFinished={onReload} />
+        </div>
       </div>
 
       <DataTable

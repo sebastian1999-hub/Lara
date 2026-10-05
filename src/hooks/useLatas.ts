@@ -10,6 +10,8 @@ interface UseLatasResult {
   addLata: (input: LataInput) => Promise<void>
   addLatas: (inputs: LataInput[]) => Promise<void>
   updateLata: (id: number, input: LataInput) => Promise<void>
+  /** Actualiza solo el precio de una lata, sin recargar el listado (pensado para procesos en bloque). */
+  updatePrecio: (id: number, precio: number) => Promise<void>
   deleteLata: (id: number) => Promise<void>
 }
 
@@ -59,11 +61,16 @@ export function useLatas(): UseLatasResult {
     await reload()
   }, [reload])
 
+  const updatePrecio = useCallback(async (id: number, precio: number) => {
+    const { error: updateError } = await supabase.from('latas').update({ precio }).eq('id', id)
+    if (updateError) throw new Error(updateError.message)
+  }, [])
+
   const deleteLata = useCallback(async (id: number) => {
     const { error: deleteError } = await supabase.from('latas').delete().eq('id', id)
     if (deleteError) throw new Error(deleteError.message)
     await reload()
   }, [reload])
 
-  return { latas, loading, error, reload, addLata, addLatas, updateLata, deleteLata }
+  return { latas, loading, error, reload, addLata, addLatas, updateLata, updatePrecio, deleteLata }
 }
