@@ -92,7 +92,7 @@ export default function App() {
         <div className="mx-auto flex flex-col gap-3 px-4 py-4 sm:px-6">
           <div className="flex flex-col gap-1">
             <h1 className="flex items-center gap-2 text-xl font-bold text-periwinkle-900 sm:text-2xl">
-              <img src="/gato.png" alt="" className="h-8 w-8 sm:h-9 sm:w-9" />
+              <img src={`${import.meta.env.BASE_URL}gato.png`} alt="" className="h-8 w-8 sm:h-9 sm:w-9" />
               Lara · Comparador de latas para gatos
             </h1>
             <p className="text-xs text-periwinkle-800/80 sm:text-sm">
