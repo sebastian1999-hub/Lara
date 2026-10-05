@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm transition-colors focus:border-periwinkle-400 focus:outline-none focus:ring-2 focus:ring-periwinkle-200;
+  }
+
+  .pagination-btn {
+    @apply rounded-lg px-2.5 py-1 text-sm font-medium text-periwinkle-700 transition-colors hover:bg-periwinkle-100 disabled:pointer-events-none disabled:opacity-30;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(160deg, #eef1ff 0%, #f6f6e0 55%, #fbfae0 100%);
+  min-height: 100vh;
+  color: #27304f;
+}
+
+/* Scrollbar discreta para la tabla y los desplegables de filtro */
+.scroll-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background-color: #b5c4fa;
+  border-radius: 9999px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background-color: transparent;
+}
