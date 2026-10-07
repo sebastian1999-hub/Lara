@@ -4,8 +4,21 @@ import { MultiChipSelect } from './MultiChipSelect'
 import { CollapsibleSection } from './CollapsibleSection'
 import { DataTable } from './DataTable'
 import { Pagination } from './Pagination'
+import { LikeDonutChart } from './LikeDonutChart'
 
 const DEFAULT_PAGE_SIZE = 5
+
+type LikeCategory = 'luna' | 'artemis' | 'both' | 'none' | null
+
+function classifyLeGusta(value: string | null): LikeCategory {
+  const normalized = (value ?? '').trim().toLowerCase()
+  if (!normalized) return null
+  if (normalized === 'los dos' || normalized === 'ambos') return 'both'
+  if (normalized === 'luna') return 'luna'
+  if (normalized === 'artemis') return 'artemis'
+  if (normalized === 'ninguno' || normalized === 'ninguna') return 'none'
+  return null
+}
 
 interface Criteria {
   marca: Set<string>
@@ -71,6 +84,37 @@ export function SearchTab({ latas, distinctValues, onEdit, onDeleteRequest }: Se
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [currentPage, setCurrentPage] = useState(1)
 
+  const likeStats = useMemo(() => {
+    let luna = 0
+    let artemis = 0
+    let both = 0
+    let none = 0
+    for (const lata of latas) {
+      switch (classifyLeGusta(lata.le_gusta)) {
+        case 'luna':
+          luna += 1
+          break
+        case 'artemis':
+          artemis += 1
+          break
+        case 'both':
+          both += 1
+          break
+        case 'none':
+          none += 1
+          break
+      }
+    }
+    return {
+      lunaLikes: luna + both,
+      lunaDislikes: artemis + none,
+      artemisLikes: artemis + both,
+      artemisDislikes: luna + none,
+      bothLikes: both,
+      bothDislikes: luna + artemis + none,
+    }
+  }, [latas])
+
   const results = useMemo(() => {
     if (!appliedCriteria) return []
     let rows = latas.filter((lata) => matches(lata, appliedCriteria))
@@ -134,6 +178,33 @@ export function SearchTab({ latas, distinctValues, onEdit, onDeleteRequest }: Se
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <LikeDonutChart
+          label="Luna"
+          imageSrc={`${import.meta.env.BASE_URL}luna.jpg`}
+          yesLabel="Le gusta"
+          yesCount={likeStats.lunaLikes}
+          noLabel="No le gusta"
+          noCount={likeStats.lunaDislikes}
+        />
+        <LikeDonutChart
+          label="Artemis"
+          imageSrc={`${import.meta.env.BASE_URL}artemis.jpg`}
+          yesLabel="Le gusta"
+          yesCount={likeStats.artemisLikes}
+          noLabel="No le gusta"
+          noCount={likeStats.artemisDislikes}
+        />
+        <LikeDonutChart
+          label="A ambos"
+          imageSrc={`${import.meta.env.BASE_URL}ambos.jpg`}
+          yesLabel="Les gusta a ambos"
+          yesCount={likeStats.bothLikes}
+          noLabel="Solo a uno o a ninguno"
+          noCount={likeStats.bothDislikes}
+        />
+      </div>
+
       <form
         onSubmit={handleSearch}
         className="flex flex-col gap-4 rounded-2xl border border-periwinkle-200 bg-white/80 p-4 shadow-soft sm:p-5"

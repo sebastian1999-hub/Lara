@@ -97,6 +97,10 @@ supabase functions deploy scrape-price
 
 ## Funcionalidades
 
+- **Gráficos de preferencias**: en la parte superior de la pestaña "Buscar" se muestran tres
+  gráficos circulares (con la foto de Luna, Artemis y "ambos" en el centro) con el porcentaje de
+  latas que le gustan a cada gata y cuántas les gustan a las dos, calculado a partir de la
+  columna `le_gusta`.
 - **Listado responsive**: tabla completa en escritorio/tablet y tarjetas apiladas en móvil.
 - **Filtros estilo Excel**: cada columna categórica (`marca`, `lleva_huevo`, `tipo`, `le_gusta`,
   `tiendanimal_puntos`) tiene un desplegable con la lista de valores únicos y casillas de
